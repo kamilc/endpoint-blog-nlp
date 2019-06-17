@@ -1,0 +1,42 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(commonmark)
+library(magrittr)
+```
+
+
+```{r}
+blog_zip_url <- 'https://github.com/EndPointCorp/end-point-blog/archive/master.zip'
+zip_archive <- 'data/blog.zip'
+
+if(!file.exists(zip_archive)) {
+  download.file(blog_zip_url, destfile = zip_archive, method = "wget")
+  unzip(zip_archive, exdir = 'data')
+}
+```
+
+
+
+```{r}
+articles <- tibble(file=list.files('data', pattern = '*.md', recursive = TRUE)) %>%
+  mutate(text=map_chr(file, function(f) read_file(paste0('data/', f))))
+```
+
+
+```{r}
+clean_article <- function(article) {
+  pos <- str_locate_all(article, '---\n') %>% unlist %>% last
+
+  article %>% str_sub(pos) %>% markdown_text()
+}
+```
+
+```{r}
+articles %<>% mutate(text=map_chr(text, ~ clean_article(.)))
+```
+
