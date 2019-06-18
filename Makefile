@@ -7,22 +7,27 @@ list:
 
 .build/base_image_$(VERSION):
 	set -e ;\
+	source .env ;\
 	docker build -t endpoint-blog-pipeline/base:$(VERSION) -t endpoint-blog-pipeline/base:latest tasks/base ;\
 	touch .build/base_image_$(VERSION)
 
 .build/notebooks_image_$(VERSION): .build/base_image_$(VERSION)
 	set -e ;\
+	source .env ;\
 	docker build -t endpoint-blog-pipeline/notebooks:$(VERSION) -t endpoint-blog-pipeline/notebooks:latest tasks/notebooks ;\
 	touch .build/notebooks_image_$(VERSION)
 
 .build/orchestrator_image_$(VERSION):
 	set -e ;\
+	source .env ;\
 	docker build -t endpoint-blog-pipeline/orchestrator:$(VERSION) -t endpoint-blog-pipeline/orchestrator:latest orchestrator ;\
 	touch .build/orchestrator_image_$(VERSION)
 
 images: .build/orchestrator_image_$(VERSION) .build/notebooks_image_$(VERSION)
 
 docker_compose_yml:
+	set -e ;\
+	source .env ;\
 	VERSION=$(VERSION) envsubst < "docker-compose.yml.template" > "docker-compose.yml" ;\
 
 clean:
