@@ -5,6 +5,11 @@ VERSION?=latest
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
 
+.build/base_image_$(VERSION):
+	set -e ;\
+	docker build -t endpoint-blog-pipeline/base:$(VERSION) -t endpoint-blog-pipeline/base:latest tasks/base ;\
+	touch .build/base_image_$(VERSION)
+
 .build/orchestrator_image_$(VERSION):
 	set -e ;\
 	docker build -t endpoint-blog-pipeline/orchestrator:$(VERSION) -t endpoint-blog-pipeline/orchestrator:latest orchestrator ;\
@@ -28,3 +33,6 @@ stop: docker_compose_yml
 
 run: docker_compose_yml images
 	CURRENT_UID=$$(id -u):$$(id -g) docker-compose up orchestrator
+
+notebook: docker_compose_yml images
+	CURRENT_UID=$$(id -u):$$(id -g) docker-compose up jupyter
