@@ -10,21 +10,23 @@ list:
 	docker build -t endpoint-blog-pipeline/base:$(VERSION) -t endpoint-blog-pipeline/base:latest tasks/base ;\
 	touch .build/base_image_$(VERSION)
 
+.build/notebooks_image_$(VERSION): .build/base_image_$(VERSION)
+	set -e ;\
+	docker build -t endpoint-blog-pipeline/notebooks:$(VERSION) -t endpoint-blog-pipeline/notebooks:latest tasks/notebooks ;\
+	touch .build/notebooks_image_$(VERSION)
+
 .build/orchestrator_image_$(VERSION):
 	set -e ;\
 	docker build -t endpoint-blog-pipeline/orchestrator:$(VERSION) -t endpoint-blog-pipeline/orchestrator:latest orchestrator ;\
 	touch .build/orchestrator_image_$(VERSION)
 
-images: .build/orchestrator_image_$(VERSION)
+images: .build/orchestrator_image_$(VERSION) .build/notebooks_image_$(VERSION)
 
 docker_compose_yml:
 	VERSION=$(VERSION) envsubst < "docker-compose.yml.template" > "docker-compose.yml" ;\
 
 clean:
 	rm -f .build/*
-
-clean-data:
-	rm -fr data_root/*
 
 stop: docker_compose_yml
 	set -e ;\
@@ -34,5 +36,5 @@ stop: docker_compose_yml
 run: docker_compose_yml images
 	CURRENT_UID=$$(id -u):$$(id -g) docker-compose up orchestrator
 
-notebook: docker_compose_yml images
-	CURRENT_UID=$$(id -u):$$(id -g) docker-compose up jupyter
+notebooks: docker_compose_yml images
+	CURRENT_UID=$$(id -u):$$(id -g) docker-compose up notebooks

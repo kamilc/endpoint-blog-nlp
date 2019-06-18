@@ -1,7 +1,7 @@
 version: '2'
 services:
   luigid:
-    image: endpoint-blog-pipeline/orchestrator:${VERSION}
+    image: endpoint-blog-pipeline/orchestrator:latest
     build:
       context: ./orchestrator
     command: luigid
@@ -9,7 +9,7 @@ services:
       - "8082:8082"
 
   notebooks:
-    image: endpoint-blog-pipeline/notebooks:${VERSION}
+    image: endpoint-blog-pipeline/notebooks:latest
     volumes:
       - ./data:/usr/share/data/
       - ./notebooks:/notebooks
@@ -21,12 +21,12 @@ services:
     command: jupyter lab --notebook-dir=/notebooks --ip 0.0.0.0 --allow-root --port 8001
 
   orchestrator:
-    image: endpoint-blog-pipeline/orchestrator:${VERSION}
+    image: endpoint-blog-pipeline/orchestrator:latest
     depends_on:
       - luigid
     environment:
-      - PROJECT_ROOT=$PWD
-      - PIPELINE_VERSION=$VERSION
+      - PROJECT_ROOT=/home/kamil/projects/endpoint-blog-nlp
+      - PIPELINE_VERSION=latest
       - PYTHONPATH=/opt/orchestrator/
     volumes:
       - ./data:/usr/share/data/
