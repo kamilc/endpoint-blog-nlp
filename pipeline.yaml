@@ -1,4 +1,4 @@
-piVersion: argoproj.io/v1alpha1
+apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   generateName: endpoint-blog-pipeline-
@@ -7,9 +7,9 @@ spec:
   templates:
   - name: whalesay
     container:
-      image: docker/whalesay
-      command: [cowsay]
-      args: ["ML pipeline!"]
+      image: base:5000/blog_pipeline_notebooks
+      command: [python]
+      args: ["--version"]
       resources:
         limits:
           memory: 32Mi
