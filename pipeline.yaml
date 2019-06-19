@@ -1,0 +1,16 @@
+piVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: endpoint-blog-pipeline-
+spec:
+  entrypoint: whalesay
+  templates:
+  - name: whalesay
+    container:
+      image: docker/whalesay
+      command: [cowsay]
+      args: ["ML pipeline!"]
+      resources:
+        limits:
+          memory: 32Mi
+          cpu: 100m

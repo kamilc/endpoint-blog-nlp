@@ -1,4 +1,0 @@
-luigi
-click
-boto3
-pykube
