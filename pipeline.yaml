@@ -3,14 +3,34 @@ kind: Workflow
 metadata:
   generateName: endpoint-blog-pipeline-
 spec:
-  entrypoint: whalesay
+  entrypoint: article-vectors
+  volumes:
+  - name: endpoint-blog-src
+    hostPath:
+      path: /home/kamil/data/endpoint-blog-src
+      type: Directory
   templates:
-  - name: whalesay
+  - name: clone-repo
     container:
-      image: base:5000/blog_pipeline_notebooks
+      image: base:5000/blog_pipeline_clone_repo
+      command: [bash]
+      args: ["/run.sh"]
+      volumeMounts:
+      - mountPath: /data
+        name: endpoint-blog-src
+  - name: build-model
+    container:
+      image: base:5000/blog_pipeline_build_model
       command: [python]
-      args: ["--version"]
-      resources:
-        limits:
-          memory: 32Mi
-          cpu: 100m
+      args: ["run.py"]
+      volumeMounts:
+      - mountPath: /data
+        name: endpoint-blog-src
+  - name: article-vectors
+    dag:
+      tasks:
+      - name: src
+        template: clone-repo
+      - name: model
+        template: build-model
+        dependencies: [src]

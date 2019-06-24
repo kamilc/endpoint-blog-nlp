@@ -11,4 +11,10 @@ tasks/%: FORCE
 
 images: $(TASK_IMAGES)
 
+start_notebooks:
+	kubectl apply -f notebooks.yml
+
+stop_notebooks:
+	kubectl delete deployment jupyter-notebook
+
 FORCE: ;
