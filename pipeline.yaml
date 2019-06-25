@@ -18,6 +18,14 @@ spec:
       volumeMounts:
       - mountPath: /data
         name: endpoint-blog-src
+  - name: preprocess
+    container:
+      image: base:5000/blog_pipeline_preprocess
+      command: [python]
+      args: ["run.py"]
+      volumeMounts:
+      - mountPath: /data
+        name: endpoint-blog-src
   - name: build-model
     container:
       image: base:5000/blog_pipeline_build_model
@@ -31,6 +39,9 @@ spec:
       tasks:
       - name: src
         template: clone-repo
+      - name: dataframe
+        template: preprocess
+        dependencies: [src]
       - name: model
         template: build-model
-        dependencies: [src]
+        dependencies: [dataframe]
