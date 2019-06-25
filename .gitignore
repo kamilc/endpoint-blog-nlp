@@ -1,3 +1,4 @@
 data/
+tmp/
 .ipynb_checkpoints/
 .build/
