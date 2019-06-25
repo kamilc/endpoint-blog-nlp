@@ -11,6 +11,9 @@ tasks/%: FORCE
 
 images: $(TASK_IMAGES)
 
+run: images
+	argo submit pipeline.yaml --watch
+
 start_notebooks:
 	kubectl apply -f notebooks.yml
 

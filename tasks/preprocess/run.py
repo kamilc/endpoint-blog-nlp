@@ -30,8 +30,10 @@ def build_dataframe():
     contents = [read_file(path) for path in files]
     texts = [remove_code(prune_front_matter(text)).lower() for text in contents]
 
-    articles = pd.DataFrame({ 'file': ["/".join(p.split("/")[2:]) for p in files], 'text': texts })
+    articles = pd.DataFrame({ 'file': ["/".join(p.split("/")[3:]) for p in files], 'text': texts })
     articles.to_parquet('/data/articles.parquet')
+
+    print(f"Wrote data frame for paths (showing 10): {articles.head(10)['file'].tolist()}")
 
 if __name__ == '__main__':
     if os.path.isfile('/data/articles.parquet'):

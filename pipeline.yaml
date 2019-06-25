@@ -34,6 +34,14 @@ spec:
       volumeMounts:
       - mountPath: /data
         name: endpoint-blog-src
+  - name: infer
+    container:
+      image: base:5000/blog_pipeline_infer
+      command: [python]
+      args: ["run.py"]
+      volumeMounts:
+      - mountPath: /data
+        name: endpoint-blog-src
   - name: article-vectors
     dag:
       tasks:
@@ -45,3 +53,6 @@ spec:
       - name: model
         template: build-model
         dependencies: [dataframe]
+      - name: infer
+        template: infer
+        dependencies: [model]
